@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia de España en el Siglo XIX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Warm Neutral & Teal -->
+    <!-- Application Structure Plan: Se ha diseñado una SPA de una sola página con una barra de navegación superior fija (sticky). Esta barra contiene enlaces a las 4 secciones principales del informe (Crisis, Isabel II, Sexenio, Restauración) más una nueva sección de "Visión General". El JS maneja la navegación por scroll suave (smooth scroll) a la sección correspondiente. Esta estructura se eligió porque transforma el informe lineal en un 'dashboard' explorable, permitiendo al usuario saltar a cualquier período de interés al instante, facilitando la comparación y la navegación no lineal, lo cual es fundamental para una 'aplicación interactiva'. -->
+    <!-- Visualization & Content Choices: 1) Informe: Cronología completa S.XIX. -> Objetivo: Resumen visual de alto nivel de todo el siglo. -> Viz/Método: Gráfico de barras horizontal (estilo Gantt) usando Chart.js (Canvas), mostrando la duración y superposición de regímenes y conflictos. -> Interacción: Tooltips (al pasar el ratón) muestran el evento y los años exactos. -> Justificación: Convierte el texto lineal en una visión general visual e inmediata. 2) Informe: Tablas de eventos por período. -> Objetivo: Presentar los detalles de cada período de forma clara y accesible. -> Viz/Método: Tablas HTML estilizadas con Tailwind, ubicadas dentro de su sección de SPA correspondiente. -> Interacción: La navegación JS permite saltar entre estas secciones. -> Justificación: Mantiene la información detallada organizada y la navegación la hace fácilmente explorable. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 1024px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+                max-height: 60vh;
+            }
+        }
+        .nav-link {
+            padding: 8px 0;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .nav-link.active,
+        .nav-link:hover {
+            color: #0d9488; /* teal-600 */
+            border-bottom-color: #0d9488;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="sticky top-0 bg-white shadow-md z-50 w-full">
+        <nav class="container mx-auto flex flex-wrap justify-center p-4 gap-x-6 gap-y-2 md:gap-x-8">
+            <button class="nav-link font-medium text-stone-600 active" data-target="vision-general">Visión General</button>
+            <button class="nav-link font-medium text-stone-600" data-target="crisis">Crisis (1808-1833)</button>
+            <button class="nav-link font-medium text-stone-600" data-target="isabel-ii">Isabel II (1833-1868)</button>
+            <button class="nav-link font-medium text-stone-600" data-target="sexenio">Sexenio (1868-1874)</button>
+            <button class="nav-link font-medium text-stone-600" data-target="restauracion">Restauración (1874-1900)</button>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-6 md:p-10 max-w-7xl">
+
+        <section id="vision-general" class="mb-16">
+            <h1 class="text-4xl font-bold text-teal-700 mb-4 text-center">Historia de España en el Siglo XIX</h1>
+            <p class="text-lg text-stone-700 max-w-4xl mx-auto text-center mb-10">
+                El siglo XIX en España se caracteriza por la liquidación del Antiguo Régimen, el nacimiento del Estado Liberal y un intenso periodo de inestabilidad política, guerras civiles y revoluciones. Esta aplicación interactiva le permite explorar los eventos clave de este siglo tumultuoso.
+            </p>
+            
+            <h2 class="text-3xl font-bold text-stone-800 mb-6 text-center">Línea de Tiempo Visual del Siglo</h2>
+            <p class="text-md text-stone-600 max-w-3xl mx-auto text-center mb-8">
+                Pase el ratón sobre las barras para ver la duración de cada período político o conflicto principal. Este gráfico muestra la superposición y la rápida sucesión de regímenes que definieron la inestabilidad del siglo.
+            </p>
+            <div class="chart-container">
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </section>
+
+        <hr class="my-16 border-stone-300">
+
+        <section id="crisis" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-teal-700 mb-4">1. La Crisis del Antiguo Régimen y la Revolución Liberal (1808-1833)</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                Esta primera fase está marcada por la invasión napoleónica y el primer intento de imponer el liberalismo a través de la Constitución de Cádiz. Sin embargo, la vuelta de Fernando VII supuso una feroz restauración del absolutismo, interrumpida brevemente por el Trienio Liberal.
+            </p>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-stone-100">
+                            <tr>
+                                <th class="p-4 font-semibold text-stone-700">Año/Periodo</th>
+                                <th class="p-4 font-semibold text-stone-700">Acontecimiento Clave</th>
+                                <th class="p-4 font-semibold text-stone-700">Consecuencia</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-200">
+                            <tr>
+                                <td class="p-4 font-medium">**1808**</td>
+                                <td class="p-4">**Guerra de la Independencia**</td>
+                                <td class="p-4 text-stone-700">Levantamiento popular contra la ocupación francesa (José I Bonaparte). Formación de las Juntas.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1810-1814**</td>
+                                <td class="p-4">**Cortes de Cádiz**</td>
+                                <td class="p-4 text-stone-700">Redacción de la primera Constitución liberal de España.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1812**</td>
+                                <td class="p-4">**Constitución de Cádiz ("La Pepa")**</td>
+                                <td class="p-4 text-stone-700">Establece la soberanía nacional, la división de poderes y el sufragio universal masculino indirecto.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1814**</td>
+                                <td class="p-4">**Restauración Absolutista**</td>
+                                <td class="p-4 text-stone-700">Fernando VII regresa a España, anula la Constitución de 1812 y restaura la monarquía absoluta (*Manifiesto de los Persas*).</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1820-1823**</td>
+                                <td class="p-4">**Trienio Liberal**</td>
+                                <td class="p-4 text-stone-700">El pronunciamiento del General Riego obliga a Fernando VII a jurar la Constitución. Finaliza con la intervención de la Santa Alianza ("Cien Mil Hijos de San Luis").</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1823-1833**</td>
+                                <td class="p-4">**Década Ominosa**</td>
+                                <td class="p-4 text-stone-700">Última etapa de represión absolutista. Crisis sucesoria: Fernando VII promulga la Pragmática Sanción para que su hija, Isabel, pueda reinar.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-stone-300">
+
+        <section id="isabel-ii" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-teal-700 mb-4">2. La Construcción del Estado Liberal: El Reinado de Isabel II (1833-1868)</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                Tras la muerte de Fernando VII, el Estado Liberal finalmente se impone, pero nace dividido. La Primera Guerra Carlista consolida el trono de Isabel II, pero su reinado se caracteriza por la lucha entre el Partido Moderado (conservador) y el Partido Progresista, con constituciones que reflejan el poder de cada uno.
+            </p>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-stone-100">
+                            <tr>
+                                <th class="p-4 font-semibold text-stone-700">Año/Periodo</th>
+                                <th class="p-4 font-semibold text-stone-700">Acontecimiento Clave</th>
+                                <th class="p-4 font-semibold text-stone-700">Consecuencia</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-200">
+                            <tr>
+                                <td class="p-4 font-medium">**1833-1840**</td>
+                                <td class="p-4">**Primera Guerra Carlista**</td>
+                                <td class="p-4 text-stone-700">Enfrentamiento entre partidarios de Isabel II (liberales) y Carlos María Isidro (absolutistas). El triunfo liberal consolida el trono.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1837**</td>
+                                <td class="p-4">**Nueva Constitución**</td>
+                                <td class="p-4 text-stone-700">Constitución de corte progresista que establece la soberanía nacional.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1844-1854**</td>
+                                <td class="p-4">**Década Moderada**</td>
+                                <td class="p-4 text-stone-700">Predominio del Partido Moderado. Creación de la Guardia Civil (1844) y **Constitución de 1845** (conservadora, soberanía compartida).</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1854-1856**</td>
+                                <td class="p-4">**Bienio Progresista**</td>
+                                <td class="p-4 text-stone-700">Golpe de Estado (Vicalvarada) que lleva al poder a los progresistas y la Unión Liberal (O'Donnell).</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1856-1868**</td>
+                                <td class="p-4">**Gobiernos de la Unión Liberal y Moderados**</td>
+                                <td class="p-4 text-stone-700">Periodo de relativa paz económica, pero de creciente descontento político que desemboca en la caída de la monarquía.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-stone-300">
+
+        <section id="sexenio" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-teal-700 mb-4">3. El Sexenio Democrático y la Inestabilidad (1868-1874)</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                La "Revolución Gloriosa" expulsa a Isabel II e inaugura el intento más avanzado de democracia del siglo, con la Constitución de 1869. Sin embargo, el periodo es de una inestabilidad total: se prueba una nueva monarquía (Amadeo I) y, por primera vez, una República, ambas fracasando estrepitosamente.
+            </p>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-stone-100">
+                            <tr>
+                                <th class="p-4 font-semibold text-stone-700">Año/Periodo</th>
+                                <th class="p-4 font-semibold text-stone-700">Acontecimiento Clave</th>
+                                <th class="p-4 font-semibold text-stone-700">Consecuencia</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-200">
+                            <tr>
+                                <td class="p-4 font-medium">**Sept. 1868**</td>
+                                <td class="p-4">**La Revolución Gloriosa**</td>
+                                <td class="p-4 text-stone-700">Un pronunciamiento militar derroca a Isabel II. Se inicia el Sexenio Revolucionario.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1869**</td>
+                                <td class="p-4">**Constitución de 1869**</td>
+                                <td class="p-4 text-stone-700">La más avanzada: sufragio universal masculino, amplias libertades y monarquía constitucional.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1871-1873**</td>
+                                <td class="p-4">**Reinado de Amadeo I de Saboya**</td>
+                                <td class="p-4 text-stone-700">Monarca elegido por las Cortes. La inestabilidad, la oposición y la **Tercera Guerra Carlista** provocan su abdicación.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1873-1874**</td>
+                                <td class="p-4">**Primera República Española**</td>
+                                <td class="p-4 text-stone-700">Proclamada tras la abdicación de Amadeo I. Caracterizada por la fragmentación, el Cantonalismo y la falta de apoyo.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1874**</td>
+                                <td class="p-4">**Golpe de Pavía**</td>
+                                <td class="p-4 text-stone-700">Un golpe militar disuelve la República, abriendo el camino a la restauración borbónica.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-stone-300">
+
+        <section id="restauracion" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-teal-700 mb-4">4. La Restauración Borbónica y el Fin de Siglo (1874-1900)</h2>
+            <p class="text-lg text-stone-700 mb-8">
+                El siglo termina con la vuelta de los Borbones en la figura de Alfonso XII. Se establece un sistema de estabilidad artificial diseñado por Cánovas del Castillo, basado en el "Turno Pacífico" (un fraude electoral pactado entre conservadores y liberales). Este sistema da estabilidad pero entra en crisis con el "Desastre del 98".
+            </p>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-stone-100">
+                            <tr>
+                                <th class="p-4 font-semibold text-stone-700">Año/Periodo</th>
+                                <th class="p-4 font-semibold text-stone-700">Acontecimiento Clave</th>
+                                <th class="p-4 font-semibold text-stone-700">Consecuencia</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-200">
+                            <tr>
+                                <td class="p-4 font-medium">**1874**</td>
+                                <td class="p-4">**Pronunciamiento de Sagunto**</td>
+                                <td class="p-4 text-stone-700">El general Martínez Campos proclama a Alfonso XII, hijo de Isabel II, como rey. Inicio de la Restauración.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1876**</td>
+                                <td class="p-4">**Constitución de 1876**</td>
+                                <td class="p-4 text-stone-700">De carácter conservador, diseñada por Cánovas del Castillo. Estabilidad basada en soberanía compartida y bipartidismo.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1876-1898**</td>
+                                <td class="p-4">**Sistema del Turno Pacífico**</td>
+                                <td class="p-4 text-stone-700">Alternancia pactada entre el Partido Conservador y el Liberal, asegurada mediante el fraude electoral (*pucherazo*).</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1885**</td>
+                                <td class="p-4">**Pacto del Pardo**</td>
+                                <td class="p-4 text-stone-700">Tras la muerte de Alfonso XII, se acuerda garantizar la regencia de María Cristina y mantener el turno dinástico.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**1898**</td>
+                                <td class="p-4">**El Desastre del 98**</td>
+                                <td class="p-4 text-stone-700">Guerra Hispano-Estadounidense. España pierde sus últimas grandes colonias (Cuba, Puerto Rico y Filipinas).</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">**Fin de Siglo**</td>
+                                <td class="p-4">**Crisis del 98**</td>
+                                <td class="p-4 text-stone-700">El "Desastre" provoca una profunda crisis moral e ideológica, impulsando el regeneracionismo.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-stone-300 p-10 mt-16">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 Explorador de Historia. Aplicación generada para resumir el Siglo XIX en España.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            initNavigation();
+            initChart();
+
+        });
+
+        function initNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                    
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            });
+
+            const sections = document.querySelectorAll('section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('data-target') === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: '-20% 0px -75% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            
+            const data = {
+                labels: [
+                    'Conflictos Principales', 
+                    'Crisis (Fernando VII)', 
+                    'Reinado Isabel II', 
+                    'Sexenio Democrático', 
+                    'Restauración'
+                ],
+                datasets: [
+                    {
+                        label: 'Guerra de Independencia',
+                        data: [{ x: [1808, 1814], y: 'Crisis (Fernando VII)' }],
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                    },
+                    {
+                        label: 'Restauración Absolutista',
+                        data: [{ x: [1814, 1820], y: 'Crisis (Fernando VII)' }],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    },
+                    {
+                        label: 'Trienio Liberal',
+                        data: [{ x: [1820, 1823], y: 'Crisis (Fernando VII)' }],
+                        backgroundColor: 'rgba(234, 179, 8, 0.7)',
+                    },
+                    {
+                        label: 'Década Ominosa',
+                        data: [{ x: [1823, 1833], y: 'Crisis (Fernando VII)' }],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    },
+                    {
+                        label: '1ª Guerra Carlista',
+                        data: [{ x: [1833, 1840], y: 'Conflictos Principales' }],
+                        backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                    },
+                    {
+                        label: 'Reinado Isabel II',
+                        data: [{ x: [1833, 1868], y: 'Reinado Isabel II' }],
+                        backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                    },
+                    {
+                        label: 'Sexenio Democrático',
+                        data: [{ x: [1868, 1874], y: 'Sexenio Democrático' }],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                    },
+                    {
+                        label: '3ª Guerra Carlista',
+                        data: [{ x: [1872, 1876], y: 'Conflictos Principales' }],
+                        backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                    },
+                    {
+                        label: 'Restauración',
+                        data: [{ x: [1874, 1900], y: 'Restauración' }],
+                        backgroundColor: 'rgba(13, 148, 136, 0.7)',
+                    },
+                    {
+                        label: 'Guerra de Cuba/EEUU',
+                        data: [{ x: [1895, 1898], y: 'Conflictos Principales' }],
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                    }
+                ]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            min: 1800,
+                            max: 1900,
+                            title: {
+                                display: true,
+                                text: 'Año'
+                            },
+                            ticks: {
+                                stepSize: 10
+                            }
+                        },
+                        y: {
+                            stacked: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: (context) => {
+                                    return context[0].dataset.label;
+                                },
+                                label: (context) => {
+                                    const val = context.parsed.x;
+                                    return `Duración: ${val[0]} - ${val[1]}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
